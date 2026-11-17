@@ -119,10 +119,28 @@ Autenticação de múltiplos fatores.
 
 7. Ataques em Formulários de Login Web 
    
-Nessa etapa foi utilizado o recurso do DVWA (Damn Vulnerable Web Application). Esse recurso simula uma sessão de login genérica com "username" e "password". Ao precionar a tecla F12(no caso desse teste) pode-se ser acessado a aba de programador que vai mostrar na sessão de Requests que o login que foi testado deu como errado: user "joao" password "456". Porém todos os parâmetros estão disponíveis para serem vistos "username", "password" e "Login". Esse processo infelizmente não foi possível de se finalizar pois o comando exigia um carácter que o teclado não conseguia digitar por ele ficar com as teclas "trocadas" ao entrar na VM.
+Nessa etapa foi utilizado o recurso do DVWA (Damn Vulnerable Web Application). Esse recurso simula uma sessão de login genérica com "username" e "password". Ao precionar a tecla F12(no caso desse teste) pode-se ser acessado a aba de programador que vai mostrar na sessão de Requests que o login que foi testado deu como errado: user "joao" password "456". Porém todos os parâmetros estão disponíveis para serem vistos "username", "password" e "Login".
 
-9. Ataques a SMB
-    
+Com isso pode ser criado duas Wordlists, tanto de usuários tanto de senhas com os comandos:
+
+echo -e "user\nmsfadmin\nadmin\nroot" > users.txt
+
+echo -e "123456\npassword\nqwerty\nmsfadmin" > pass.txt
+
+Ao serem criados esse arquivos será digitado o seguinte comando:
+
+medusa -h 192.168.55.102 -U users.txt -P pass.txt -M http \
+-m PAGE: '/dvwa/login.php' \
+-m FORM: 'username=^USER^&password=^PASS^&Login=Login' \
+-m 'FAIL=Login failed' -t 6
+
+Esse comando precisará ser executado algumas vezes até ele apresentar o usuário e senhas que podem ser utilizados para entrar no DVWA. Nesse caso foram "admin" como usuário e "password" como senha.
+
+O perigo para a segurança da conta está no fato de que hackers maliciosos irão usar listas de usuários e senhas muito maiores do que os usados no experimento e no fato de um usuário estar usando uma senha muito previsível, o que torna o processo de invasão mais rápido. A invasão abriria um leque enorme de oportunidades do invasor, como acessar arquivos confidências da empresa ou servidor, possibilitando assim que o invasor pudesse baixar esses arquivos para sua própria máquina.
+
+9. Enumeração SMB e password spraying
+
+
 
 10.Conclusão
 
