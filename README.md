@@ -140,7 +140,25 @@ O perigo para a segurança da conta está no fato de que hackers maliciosos irã
 
 9. Enumeração SMB e password spraying
 
+Primeiramente, SMB quer dizer server message block, é um serviço da Microsoft que serve para compartilhar arquivos e realizar a autenticação de usuários. Enumeração e Password spraying são métodos de ataque usados contra grandes empresas que se dá por meio da identificação de usuários válidos e a utilização de uma senha em comum (tirada de algum vazamento antigo da empresa) para cada usuário válido, se não for a primeira senha testada é usada a próxima em intervalo de tempo para burlar o sistema de bloqueio por número de tentativas falhas por usuário.
 
+Para iniciar o teste primeiro foi necessário a criação do arquivo de usuários possíveis e de senhas fracas. Para criar esses arquivos foram digitados os comandos:
+
+echo -e "user\nmsfadmin\nservice" > smb_users.txt
+
+echo -e "password\n123456\nWelcome123\nmsfadmin" > senhas_spray.txt
+
+Com os arquivos criados deve ser digitado o comando a seguir, que levou cerca de 2 segundos para funcionar e levou 9 tentativas para encontrar o usuário:
+
+medusa -h 192.168.56.102 -U smb_users.txt -P senhas_spray.txt -M smbnt -t 2 -T 50
+
+Com isso foi possível achar o usuário real "msfadmin" com a senha "msfadmin" que inclusive tem acesso de Administrador que trás novamente o perigo de usar uma senha previsível, essa em específico é o nome do usuário.
+
+Para verificar se o acesso é mesmo real foi usado o comando do smbclient que é:
+
+smbclient -L //192.168.56.102 -U msfadmin
+
+Ao digitar esse código o sistema pede uma senha, que é a "msfadmin" que dá acesso ao compartilhamento de arquivos importantes que podem ser baixados sem nenhum problema pelo invasor.
 
 10.Conclusão
 
